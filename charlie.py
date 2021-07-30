@@ -27,7 +27,6 @@ class Database():
                 [word, synonyms]
                 )
             self.connection.commit()
-            print('Successfully added.')
             self.get_synonyms_from_db(word, update)
         except IntegrityError:
             print('This word already in a list.')
@@ -39,10 +38,8 @@ class Database():
             self.cursor.execute('SELECT * FROM words WHERE word=?', [word])
             result = self.cursor.fetchone()
             if result == None:
-                print('No word here...')
                 return True
             else:
-                print('Found the word!')
                 return False
         except OperationalError:
             return True
@@ -51,10 +48,7 @@ class Database():
         try:
             self.cursor.execute('SELECT synonyms FROM words WHERE word=?', [word])
             result = self.cursor.fetchall()
-            print(result)
             synonyms = result[0][0]
-            print('from database:')
-            print(synonyms)
             update.message.reply_text(
                 f'Synonyms of <b>{word}</b>:\n\n'
                 f'{synonyms}'
@@ -71,7 +65,6 @@ class API():
     def get_synonyms(self, update, context):
         word = update['message']['text']
         word = word.lower()
-        print(word)
 
         call = db.check_word(word)
         if call == True:
@@ -96,9 +89,6 @@ class API():
 
             synonyms = [i for i in result]
             synonyms = ', '.join(synonyms)
-
-            print('from request:')
-            print(synonyms)
 
             db.add_word(word, synonyms, update)
         else:
